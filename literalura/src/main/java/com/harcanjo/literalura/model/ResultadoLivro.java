@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record DadosLivro(
-		@JsonProperty("results") List<ResultadoLivro> resultados) {
+public record ResultadoLivro(
+		@JsonProperty("title") String titulo) {
+	
+	/* (@JsonProperty("id") Long id,
+		@JsonProperty("title") String titulo,
+		@JsonProperty("authors") List<Autor> autores) */
+
 }
