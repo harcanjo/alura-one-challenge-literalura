@@ -21,6 +21,7 @@ public class MainMenu {
 					3- listar autores registrados
 					4- listar autores vivos em um determinado ano
 					5- listar livros em um determinado idioma
+					
 					0- sair
 				 	""";
 		
@@ -84,14 +85,18 @@ public class MainMenu {
 	}
 
 	private void searchBookByTitle() {
-		System.out.println("Digite o título do livro:");
+		System.out.println("\nDigite o título do livro:\n");
 		var bookTitle = scanner.nextLine();
 		var consumoApi = new ConsumoApi();
 		var json = consumoApi.obterDados(URL + bookTitle.replace(" ", "%20").toLowerCase());
 		
+		
 		ConverteDados conversor = new ConverteDados();
 		DadosBuscaLivro dados = conversor.obterDados(json, DadosBuscaLivro.class);
-		System.out.println(dados.toString());
+		
+		if(!dados.resultados().isEmpty()) {
+			System.out.println(dados.resultados().get(0).idioma()[0]);
+		}
 	}
 	
 
