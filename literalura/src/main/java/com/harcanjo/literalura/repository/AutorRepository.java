@@ -4,9 +4,9 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.harcanjo.literalura.model.Autor;
+import com.harcanjo.literalura.model.Author;
 
-public interface AutorRepository extends JpaRepository<Autor, Long> {
+public interface AutorRepository extends JpaRepository<Author, Long> {
 
-	Optional<Autor> findByNomeContainingIgnoreCase(String nome);
+	Optional<Author> findByNameContainingIgnoreCase(String name);
 }

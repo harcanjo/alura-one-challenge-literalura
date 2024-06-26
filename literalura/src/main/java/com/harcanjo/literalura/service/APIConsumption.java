@@ -6,12 +6,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class ConsumoApi {
-		
-	public String obterDados(String endereco) {
+public class APIConsumption {
+
+	public String getData(String urlAddress) {
 	    HttpClient client = HttpClient.newHttpClient();
 	    HttpRequest request = HttpRequest.newBuilder()
-	            .uri(URI.create(endereco))
+	            .uri(URI.create(urlAddress))
 	            .build();
 	    HttpResponse<String> response = null;
 	    try {

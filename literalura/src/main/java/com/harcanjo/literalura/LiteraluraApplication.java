@@ -10,18 +10,18 @@ import com.harcanjo.literalura.repository.AutorRepository;
 
 @SpringBootApplication
 public class LiteraluraApplication implements CommandLineRunner {
-	
+
 	@Autowired
-	private AutorRepository repositorio;
+	private AutorRepository repository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(LiteraluraApplication.class, args);
 	}
 
 	@Override
-	public void run(String... args) throws Exception {		
-		MainMenu mainMenu = new MainMenu(repositorio);
-		mainMenu.showMenu();		
+	public void run(String... args) throws Exception {
+		MainMenu mainMenu = new MainMenu(repository);
+		mainMenu.showMenu();
 	}
 
 }
