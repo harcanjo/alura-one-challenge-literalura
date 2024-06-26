@@ -25,6 +25,14 @@ public class Livro {
 	private String idioma;
 	
 	private Long numeroDeDownloads;
+	
+	public Livro() {}
+
+	public Livro(String titulo, String idioma, Long numeroDeDownloads) {
+		this.titulo = titulo;
+		this.idioma = idioma;
+		this.numeroDeDownloads = numeroDeDownloads;
+	}
 
 	public Long getId() {
 		return id;
@@ -68,7 +76,7 @@ public class Livro {
 
 	@Override
 	public String toString() {
-		return "Livro titulo=" + titulo + ", autor=" + autor + ", idioma=" + idioma
+		return "Livro titulo=" + titulo + ", autor=" + autor.getNome() + ", idioma=" + idioma
 				+ ", numeroDeDownloads=" + numeroDeDownloads;
 	}
 

@@ -2,7 +2,9 @@ package com.harcanjo.literalura.model;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,8 +25,16 @@ public class Autor {
 	
 	private int morteAno;
 	
-	@OneToMany(mappedBy = "autor")
+	@OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Livro> livros;
+	
+	public Autor() {}
+
+	public Autor(String nome, int nascimento, int morte) {
+		this.nome = nome;
+		this.nascimentoAno = nascimento;
+		this.morteAno = morte;
+	}
 
 	public Long getId() {
 		return id;
