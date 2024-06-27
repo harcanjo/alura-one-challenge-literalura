@@ -1,5 +1,7 @@
 package com.harcanjo.literalura.model;
 
+import java.util.OptionalLong;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,10 +30,11 @@ public class Book {
 
 	public Book() {}
 
-	public Book(String title, String language, Long downloadsCount) {
-		this.title = title;
-		this.language = language;
-		this.downloadsCount = downloadsCount;
+	public Book(BooksSearchData bookSearch) {		
+		var bookResults = bookSearch.results().get(0);		
+		this.title = bookResults.title();
+		this.language = bookResults.language().stream().findFirst().orElse(null);
+		this.downloadsCount = OptionalLong.of(Long.valueOf(bookResults.downloadCount())).orElse(0);
 	}
 
 	public Long getId() {
@@ -55,6 +58,7 @@ public class Book {
 	}
 
 	public void setAuthor(Author author) {
+		
 		this.author = author;
 	}
 
@@ -76,8 +80,10 @@ public class Book {
 
 	@Override
 	public String toString() {
-		return "Livro titulo=" + title + ", autor=" + author.getName() + ", idioma=" + language
-				+ ", numero de downloads=" + downloadsCount;
+		return "Livro titulo=" + title + 
+				", autor=" + author.getName() + 
+				", idioma=" + language + 
+				", numero de downloads=" + downloadsCount;
 	}
 
 

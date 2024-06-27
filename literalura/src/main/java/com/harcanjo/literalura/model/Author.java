@@ -1,6 +1,7 @@
 package com.harcanjo.literalura.model;
 
 import java.util.List;
+import java.util.OptionalInt;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -32,10 +33,12 @@ public class Author {
 
 	public Author() {}
 
-	public Author(String name, int birthYear, int deathYear) {
-		this.name = name;
-		this.birthYear = birthYear;
-		this.deathYear = deathYear;
+	public Author(BooksSearchData bookSearch) {
+		var bookResults = bookSearch.results().get(0);
+		var authorResults = bookResults.author().get(0);
+		this.name = authorResults.name();
+		this.birthYear = OptionalInt.of(Integer.valueOf(authorResults.birthYear())).orElse(0);
+		this.deathYear = OptionalInt.of(Integer.valueOf(authorResults.deathYear())).orElse(0);
 	}
 
 	public Long getId() {
@@ -75,12 +78,16 @@ public class Author {
 	}
 
 	public void setBooks(List<Book> books) {
+		books.forEach(e -> e.setAuthor(this));
 		this.books = books;
 	}
 
 	@Override
 	public String toString() {
-		return "Autor nome=" + name + ", ano de nascimento=" + birthYear + ", morteAno=" + deathYear;
+		return "Autor nome=" + name + 
+				", ano de nascimento=" + birthYear + 
+				", morteAno=" + deathYear +
+				", livros=" + books;
 	}
 
 
