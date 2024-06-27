@@ -103,12 +103,12 @@ public class Author {
 
 	@Override
 	public String toString() {
-		return "\nAutor nome=" + name + 
-				", ano de nascimento=" + birthYear + 
-				", morteAno=" + deathYear +
-				", livros=\n" + books.stream()
+		return "\nAutor: " + name + "\n" + 
+				"Ano de nascimento: " + birthYear + "\n" + 
+				"Ano de falecimento: " + deathYear + "\n" +
+				"Livros: [" + books.stream()
                 					.map(Book::getTitle)
-                					.collect(Collectors.joining("\n"));
+                					.collect(Collectors.joining(", ")) + "]";
 	}
 
 

@@ -85,6 +85,6 @@ public class Book {
 				"Autor: " + author.getName() + "\n" +  
 				"Idioma: " + language + "\n" +  
 				"Número de downloads: " + downloadsCount + "\n" +
-				"-----------------";
+				"-----------------\n";
 	}
 }

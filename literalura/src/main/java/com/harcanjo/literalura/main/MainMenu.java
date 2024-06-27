@@ -26,8 +26,7 @@ public class MainMenu {
 
 	public void showMenu() {
 
-		String optionsMenu = """
-				
+		String optionsMenu = """				
 					---------------------------------------------
 					Escolha o número de sua opção:
 					1- buscar livro pelo título
@@ -80,26 +79,26 @@ public class MainMenu {
 	private void listBooksInAParticularLanguage() {
 		// TODO Implementar categorias e permitir busca pelo
 		System.out.println("""
-				Escolha um idioma:
-				en - Inglês
-				es - Espanhol
-				fr - Francês
-				it - Italiano
-				pt - Português
+				Insira o idioma para realizar a busca:
+				en - inglês
+				es - espanhol
+				fr - francês
+				it - italiano
+				pt - português
 				""");
 		String languageToSearch = scanner.nextLine();
 		List<Book> booksByLanguage = bookRepository.findByLanguageContainingIgnoreCase(languageToSearch);
 		if (!booksByLanguage.isEmpty()) {
-		    System.out.println("Livros encontrados para o idioma " + languageToSearch + ":");
-		    booksByLanguage.forEach(book -> System.out.println("- " + book.getTitle()));
+		    // System.out.println("Livros encontrados para o idioma " + languageToSearch + ":");
+		    booksByLanguage.forEach(book -> System.out.println(book));
 		} else {
-		    System.out.println("Nenhum livro encontrado para o idioma " + languageToSearch + ".");
+		    System.out.println("Não existem livros nesse idioma no banco de dados.");
 		}
 	}
 
 	private void listLivingAuthorsInAGivenYear() {
 		// TODO Alterar a exibição
-		System.out.println("Escolha um ano: ");
+		System.out.println("Insira o ano que deseja pesquisar ");
 		int userYear = scanner.nextInt();
 		scanner.nextLine();
 		List<Author> authorsAlive = authorRepository.findAll();
@@ -108,13 +107,13 @@ public class MainMenu {
 
 		for (Author author : authorsAlive) {
 		    if (author.getBirthYear() <= userYear && author.getDeathYear() >= userYear) {
-		        System.out.println("Autor encontrado: " + author.getName());
+		        System.out.println(author);
 		        foundAuthors = true;
 		    }
 		}
 
 		if (!foundAuthors) {
-		    System.out.println("Nenhum autor encontrado para o ano especificado.");
+		    System.out.println("Nenhum autor encontrado vivo para o ano especificado.");
 		}		
 	}
 
@@ -152,10 +151,10 @@ public class MainMenu {
 	                existingAuthor.get().getBooks().add(book);
 	                bookRepository.save(book);
 	            } else {
-	                System.out.println("O livro já existe no banco de dados.");
+	                 // System.out.println("O livro já existe no banco de dados.");
 	            }
 	        } else {
-	            System.out.println("Registrando o autor");
+	            // System.out.println("Registrando o autor");
 	            Author newAuthor = new Author(data);
 	            newAuthor.getBooks().add(book);
 	            book.setAuthor(newAuthor);
@@ -163,7 +162,14 @@ public class MainMenu {
 	            bookRepository.save(book);
 	        }
 	        
-	        System.out.println(bookRepository.findByTitleIgnoreCase(data.results().get(0).title()));
+	        book = bookRepository.findByTitleIgnoreCase(data.results().get(0).title())
+	        	    .orElseGet(() -> {
+	        	        // Lógica para criar um livro padrão (caso desejado)
+	        	        return new Book();
+	        	    });
+
+	        System.out.println(book);
+	        //System.out.println(bookRepository.findByTitleIgnoreCase(data.results().get(0).title()));
 	    } else {
 	        System.out.println("Livro não encontrado...");
 	    }           
