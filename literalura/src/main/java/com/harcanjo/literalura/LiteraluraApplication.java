@@ -7,12 +7,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.harcanjo.literalura.main.MainMenu;
 import com.harcanjo.literalura.repository.AutorRepository;
+import com.harcanjo.literalura.repository.BookRepository;
 
 @SpringBootApplication
 public class LiteraluraApplication implements CommandLineRunner {
 
 	@Autowired
-	private AutorRepository repository;
+	private AutorRepository authorRepository;
+	
+	@Autowired
+	private BookRepository bookRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(LiteraluraApplication.class, args);
@@ -20,7 +24,7 @@ public class LiteraluraApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		MainMenu mainMenu = new MainMenu(repository);
+		MainMenu mainMenu = new MainMenu(authorRepository, bookRepository);
 		mainMenu.showMenu();
 	}
 

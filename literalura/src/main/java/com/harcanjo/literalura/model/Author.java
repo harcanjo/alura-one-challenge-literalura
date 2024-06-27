@@ -1,7 +1,9 @@
 package com.harcanjo.literalura.model;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalInt;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -29,17 +31,34 @@ public class Author {
 	private int deathYear;
 
 	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<Book> books;
+	private List<Book> books = new ArrayList<>();
 
 	public Author() {}
 
-	public Author(BooksSearchData bookSearch) {
+	// TODO: This constructor needs to be refactored
+	/* public Author(BooksSearchData bookSearch) {
 		var bookResults = bookSearch.results().get(0);
 		var authorResults = bookResults.author().get(0);
 		this.name = authorResults.name();
 		this.birthYear = OptionalInt.of(Integer.valueOf(authorResults.birthYear())).orElse(0);
 		this.deathYear = OptionalInt.of(Integer.valueOf(authorResults.deathYear())).orElse(0);
-	}
+	}*/
+	
+	public Author(BooksSearchData bookSearch) {
+        var bookResults = bookSearch.results().get(0);
+        var authorResults = bookResults.author().get(0);
+        this.name = authorResults.name();
+        this.birthYear = Optional.ofNullable(authorResults.birthYear())
+                                 .filter(s -> !s.isEmpty())
+                                 .map(Integer::valueOf)
+                                 .orElse(0); 
+        this.deathYear = Optional.ofNullable(authorResults.deathYear())
+                                 .filter(s -> !s.isEmpty())
+                                 .map(Integer::valueOf)
+                                 .orElse(0);
+        // TODO: test if this needs to be initialized here
+        //this.books = bookResults.books() != null ? bookResults.books() : new ArrayList<>();
+    }
 
 	public Long getId() {
 		return id;
@@ -84,10 +103,12 @@ public class Author {
 
 	@Override
 	public String toString() {
-		return "Autor nome=" + name + 
+		return "\nAutor nome=" + name + 
 				", ano de nascimento=" + birthYear + 
 				", morteAno=" + deathYear +
-				", livros=" + books;
+				", livros=\n" + books.stream()
+                					.map(Book::getTitle)
+                					.collect(Collectors.joining("\n"));
 	}
 
 

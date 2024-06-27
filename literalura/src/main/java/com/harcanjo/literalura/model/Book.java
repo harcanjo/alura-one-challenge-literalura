@@ -80,11 +80,11 @@ public class Book {
 
 	@Override
 	public String toString() {
-		return "Livro titulo=" + title + 
-				", autor=" + author.getName() + 
-				", idioma=" + language + 
-				", numero de downloads=" + downloadsCount;
+		return "----- LIVRO -----\n" + 
+			   "Título: " + title + "\n" + 
+				"Autor: " + author.getName() + "\n" +  
+				"Idioma: " + language + "\n" +  
+				"Número de downloads: " + downloadsCount + "\n" +
+				"-----------------";
 	}
-
-
 }

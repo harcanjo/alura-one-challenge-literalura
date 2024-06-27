@@ -8,6 +8,7 @@ import com.harcanjo.literalura.model.Author;
 import com.harcanjo.literalura.model.Book;
 import com.harcanjo.literalura.model.BooksSearchData;
 import com.harcanjo.literalura.repository.AutorRepository;
+import com.harcanjo.literalura.repository.BookRepository;
 import com.harcanjo.literalura.service.APIConsumption;
 import com.harcanjo.literalura.service.ConvertData;
 
@@ -15,10 +16,12 @@ public class MainMenu {
 
 	private Scanner scanner = new Scanner(System.in);
 	private final String URL_BASE = "http://gutendex.com/books/?search=";
-	private AutorRepository repository;
+	private AutorRepository authorRepository;
+	private BookRepository bookRepository;
 
-	public MainMenu(AutorRepository repository) {
-		this.repository = repository;
+	public MainMenu(AutorRepository authorRepository, BookRepository bookRepository) {
+		this.authorRepository = authorRepository;
+		this.bookRepository = bookRepository;
 	}
 
 	public void showMenu() {
@@ -75,15 +78,31 @@ public class MainMenu {
 	}
 
 	private void listBooksInAParticularLanguage() {
-		// TODO Auto-generated method stub
-
+		// TODO Implementar categorias e permitir busca pelo
+		System.out.println("""
+				Escolha um idioma:
+				en - Inglês
+				es - Espanhol
+				fr - Francês
+				it - Italiano
+				pt - Português
+				""");
+		String languageToSearch = scanner.nextLine();
+		List<Book> booksByLanguage = bookRepository.findByLanguageContainingIgnoreCase(languageToSearch);
+		if (!booksByLanguage.isEmpty()) {
+		    System.out.println("Livros encontrados para o idioma " + languageToSearch + ":");
+		    booksByLanguage.forEach(book -> System.out.println("- " + book.getTitle()));
+		} else {
+		    System.out.println("Nenhum livro encontrado para o idioma " + languageToSearch + ".");
+		}
 	}
 
 	private void listLivingAuthorsInAGivenYear() {
-		// TODO Auto-generated method stub
+		// TODO Alterar a exibição
 		System.out.println("Escolha um ano: ");
 		int userYear = scanner.nextInt();
-		List<Author> authorsAlive = repository.findAll();
+		scanner.nextLine();
+		List<Author> authorsAlive = authorRepository.findAll();
 		
 		boolean foundAuthors = false;
 
@@ -100,56 +119,88 @@ public class MainMenu {
 	}
 
 	private void listRegisteredAuthors() {
-		List<Author> authors = repository.findAll();
+		// TODO Alterar a exibição
+		List<Author> authors = authorRepository.findAll();
 		authors.forEach(System.out::println);
 	}
 
 	private void listRegisteredBooks() {
-		// TODO: 
-		// List<Book> books = repository.findB;
-		
+		// TODO Alterar a exibição
+		List<Book> books = bookRepository.findAll();
+		books.forEach(System.out::println);
 	}
 
 	private void searchBookByTitle() {
+	    System.out.println("\nInsira o nome do livro que você deseja procurar:\n");
+	    var bookTitle = scanner.nextLine();                
+	    
+	    var apiConsumption = new APIConsumption();
+	    var json = apiConsumption.getData(URL_BASE + bookTitle.replace(" ", "%20").toLowerCase());
+	        
+	    ConvertData conversor = new ConvertData();
+	    BooksSearchData data = conversor.getData(json, BooksSearchData.class);
+	    
+	    if (!data.results().isEmpty()) {            
+	        Book book = new Book(data);
+	        
+	        // Verificar se o autor já existe no banco de dados
+	        Optional<Author> existingAuthor = authorRepository.findByNameIgnoreCase(data.results().get(0).author().get(0).name());
+	        
+	        if (existingAuthor.isPresent()) {                
+	            if (bookRepository.findByTitleIgnoreCase(data.results().get(0).title()).isEmpty()) {
+	                book.setAuthor(existingAuthor.get());
+	                existingAuthor.get().getBooks().add(book);
+	                bookRepository.save(book);
+	            } else {
+	                System.out.println("O livro já existe no banco de dados.");
+	            }
+	        } else {
+	            System.out.println("Registrando o autor");
+	            Author newAuthor = new Author(data);
+	            newAuthor.getBooks().add(book);
+	            book.setAuthor(newAuthor);
+	            authorRepository.save(newAuthor);
+	            bookRepository.save(book);
+	        }
+	        
+	        System.out.println(bookRepository.findByTitleIgnoreCase(data.results().get(0).title()));
+	    } else {
+	        System.out.println("Livro não encontrado...");
+	    }           
+	}
+	
+	// TODO: Duplicity problems
+	/*
+	private void searchBookByTitle() {
 		System.out.println("\nInsira o nome do livro que você deseja procurar:\n");
-		var bookTitle = scanner.nextLine();
+		var bookTitle = scanner.nextLine();				
+		
 		var apiConsumption = new APIConsumption();
 		var json = apiConsumption.getData(URL_BASE + bookTitle.replace(" ", "%20").toLowerCase());
-		// System.out.println(json);
-		
+			
 		ConvertData conversor = new ConvertData();
-		BooksSearchData data = conversor.getData(json, BooksSearchData.class);		
-		
-		// System.out.println(data.results().stream().findFirst().get().author().get(0).name());
+		BooksSearchData data = conversor.getData(json, BooksSearchData.class);
 		
 		if(!data.results().isEmpty()) {			
-				
-			// TODO: Checar se autor já está cadastrado					
+					
 			Author author = new Author(data);
-			repository.save(author);
-			
-			Optional<Author> authorBook = repository.findByNameContainingIgnoreCase(author.getName());			 
+			authorRepository.save(author);
+				
+			Optional<Author> authorBook = authorRepository.findByNameIgnoreCase(author.getName());			 
 
 			Book book = new Book(data);
-			
+				
 			if (authorBook.isPresent()) {
 				book.setAuthor(authorBook.get());
 				authorBook.get().getBooks().add(book);
-				repository.save(authorBook.get());
+				authorRepository.save(authorBook.get());
 			}
-			
-			System.out.println("----- LIVRO -----");
-			System.out.println("Título: " + book.getTitle());
-			System.out.println("Autor: " + author.getName());
-			System.out.println("Idioma: " + book.getLanguage());
-			System.out.println("Número de downloads: " + book.getDownloadsCount());
-			System.out.println("-----------------");
-			
+				
+			System.out.println(book);
+				
 		} else {
 			System.out.println("Livro não encontrado...");
-		}
-		
+		}			
 	}
-
-
+	*/
 }
